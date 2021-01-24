@@ -20,11 +20,14 @@ class LocalFeedLoader {
   
   func save(_ item: [FeedItem], completion: @escaping (Error?) -> Void) {
     store.deletedCache { [weak self] error in
-     guard let self = self else { return }
-      if error == nil {
-        self.store.insert(item, timestamp: self.currentDate(), completion: completion)
+      guard let self = self else { return }
+      if let cacheDeletionError = error {
+        completion(cacheDeletionError)
       } else {
-        completion(error)
+        self.store.insert(item, timestamp: self.currentDate()) { [weak self]  error in
+          guard self != nil else { return }
+          completion(error)
+        }
       }
     }
   }
@@ -62,7 +65,7 @@ class CacheFeedUseCacheTests: XCTestCase {
     
     XCTAssertEqual(store.receivedMessages, [.deletedCacheFeed])
   }
-    
+  
   func test_saveRequestNewCacheInsertionWithTimestampSuccesfullyDeletion() {
     let timestamp = Date()
     let items = [uniqueItem(), uniqueItem()]
@@ -84,6 +87,21 @@ class CacheFeedUseCacheTests: XCTestCase {
     }
     sut = nil
     store.completeDeletion(with: anyNSError())
+    
+    XCTAssertTrue(receivedResults.isEmpty)
+  }
+  
+  func test_save_doesNotDeliverInsertiOnErrorAfterSUTInstanceHasBeenDeallocated() {
+    let store = FeedStoreSpy()
+    var sut: LocalFeedLoader? = LocalFeedLoader(store: store, currentDate: Date.init)
+    
+    var receivedResults = [Error?]()
+    sut?.save([uniqueItem()]) { error in
+      receivedResults.append(error)
+    }
+    store.completeDeletionSuccessfully()
+    sut = nil
+    store.completeInsertion(with: anyNSError())
     
     XCTAssertTrue(receivedResults.isEmpty)
   }
@@ -134,10 +152,10 @@ class CacheFeedUseCacheTests: XCTestCase {
     }
     
     action()
-  
+    
     wait(for: [exp], timeout: 1.0)
     
-   XCTAssertEqual(receivedError as NSError?, expectedError)
+    XCTAssertEqual(receivedError as NSError?, expectedError)
   }
   
   private func uniqueItem() -> FeedItem {
@@ -183,7 +201,7 @@ class CacheFeedUseCacheTests: XCTestCase {
     }
     
   }
-    
+  
   private func anyURL() -> URL {
     let url = URL(string: "www.any-url.com")!
     return url
@@ -192,5 +210,5 @@ class CacheFeedUseCacheTests: XCTestCase {
   private func anyNSError() -> NSError {
     return NSError(domain: "any error", code: 0)
   }
-
+  
 }
