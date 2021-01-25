@@ -37,12 +37,13 @@ class CacheFeedUseCacheTests: XCTestCase {
   func test_saveRequestNewCacheInsertionWithTimestampSuccesfullyDeletion() {
     let timestamp = Date()
     let items = [uniqueItem(), uniqueItem()]
+    let localItems = items.map { LocalFeedItem(id: $0.id, description: $0.description, location: $0.location, imageURL: $0.imageURL) }
     let (sut, store) = makeSUT(currentDate: { timestamp })
     
     sut.save(items) { _ in}
     store.completeDeletionSuccessfully()
     
-    XCTAssertEqual(store.receivedMessages, [.deletedCacheFeed, .insert(items, timestamp)])
+    XCTAssertEqual(store.receivedMessages, [.deletedCacheFeed, .insert(localItems, timestamp)])
   }
   
   func test_save_doesNotDeliverDeletionErrorAfterSUTInstanceHasBeenDeallocated() {
@@ -134,7 +135,7 @@ class CacheFeedUseCacheTests: XCTestCase {
     
     enum ReceivedMessages: Equatable {
       case deletedCacheFeed
-      case insert([FeedItem], Date)
+      case insert([LocalFeedItem], Date)
     }
     
     private(set) var receivedMessages = [ReceivedMessages]()
@@ -155,7 +156,7 @@ class CacheFeedUseCacheTests: XCTestCase {
       deletionCompletions[index](nil)
     }
     
-    func insert(_ item: [FeedItem], timestamp: Date, completion: @escaping InsertionCompletion) {
+    func insert(_ item: [LocalFeedItem], timestamp: Date, completion: @escaping InsertionCompletion) {
       insertionCompletions.append(completion)
       receivedMessages.append(.insert(item, timestamp))
     }
