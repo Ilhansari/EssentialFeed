@@ -22,6 +22,7 @@
 		01FD0D2B2598757600CE5D0A /* FeedItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01FD0D2A2598757600CE5D0A /* FeedItemMapper.swift */; };
 		0F1751EF25BDE95E00311341 /* LocalFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1751EE25BDE95E00311341 /* LocalFeedLoader.swift */; };
 		0F1751F425BDE99C00311341 /* FeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1751F325BDE99C00311341 /* FeedStore.swift */; };
+		0F1751F925BED72000311341 /* RemoteFeedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1751F825BED72000311341 /* RemoteFeedItem.swift */; };
 		0F6BE22B25BAAB4A00076B28 /* CacheFeedUseCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6BE22A25BAAB4A00076B28 /* CacheFeedUseCacheTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +63,7 @@
 		01FD0D2A2598757600CE5D0A /* FeedItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemMapper.swift; sourceTree = "<group>"; };
 		0F1751EE25BDE95E00311341 /* LocalFeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFeedLoader.swift; sourceTree = "<group>"; };
 		0F1751F325BDE99C00311341 /* FeedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedStore.swift; sourceTree = "<group>"; };
+		0F1751F825BED72000311341 /* RemoteFeedItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedItem.swift; sourceTree = "<group>"; };
 		0F6BE22A25BAAB4A00076B28 /* CacheFeedUseCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheFeedUseCacheTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -157,6 +159,7 @@
 				01E80306259308D4003319BA /* RemoteFeedLoader.swift */,
 				01FD0D282598751800CE5D0A /* HTTPClient.swift */,
 				01FD0D2A2598757600CE5D0A /* FeedItemMapper.swift */,
+				0F1751F825BED72000311341 /* RemoteFeedItem.swift */,
 				01D50E2B25A5BB1B00B32F33 /* URLSessionHTTPClient.swift */,
 			);
 			path = "Feed API";
@@ -347,6 +350,7 @@
 			files = (
 				01B19E64258FB0A2006937C0 /* FeedLoader.swift in Sources */,
 				01FD0D2B2598757600CE5D0A /* FeedItemMapper.swift in Sources */,
+				0F1751F925BED72000311341 /* RemoteFeedItem.swift in Sources */,
 				01E80307259308D4003319BA /* RemoteFeedLoader.swift in Sources */,
 				0F1751F425BDE99C00311341 /* FeedStore.swift in Sources */,
 				0F1751EF25BDE95E00311341 /* LocalFeedLoader.swift in Sources */,
