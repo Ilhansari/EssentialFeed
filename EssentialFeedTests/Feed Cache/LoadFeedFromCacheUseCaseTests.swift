@@ -63,7 +63,6 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     expect(sut, toCompleteWith: .success([]), when: {
       store.completeRetrival(with: feed.local, timestamp: lessThanSevenDaysOldTimestamp)
     })
-    
   }
   
   func test_load_deliversNoImagesOnMoreThanSevenDaysOldCache() {
@@ -75,7 +74,15 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     expect(sut, toCompleteWith: .success([]), when: {
       store.completeRetrival(with: feed.local, timestamp: lessThanSevenDaysOldTimestamp)
     })
+  }
+  
+  func test_load_deletesCacheOnRetrivalError() {
+    let (sut, store) = makeSUT()
     
+    sut.load { _ in }
+    store.completeRetrival(with: anyNSError())
+    
+    XCTAssertEqual(store.receivedMessages, [.retrieve, .deletedCacheFeed])
   }
   
   // MARK: - Helpers 
