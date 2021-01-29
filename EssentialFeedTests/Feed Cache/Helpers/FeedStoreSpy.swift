@@ -66,6 +66,5 @@ class FeedStoreSpy: FeedStore {
   func completeRetrival(with feed: [LocalFeedImage], timestamp: Date, at index: Int = 0) {
     retrivalCompletions[index](.found(feed: feed, timestamp: timestamp))
   }
-
 }
 
