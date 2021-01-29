@@ -42,13 +42,26 @@ public final class LocalFeedLoader {
       case let .found(feed, timestamp) where self.validate(timestamp):
         completion(.success(feed.toModels()))
         
-      case .found:
-        completion(.success([]))
-      case .empty:
+      case .found, .empty:
         completion(.success([]))
       }
     }
   }
+  
+  
+  public func validateCache() {
+    store.retrieve { [weak self] result in
+      guard let self = self else { return }
+      switch result {
+      case .failure:
+        self.store.deletedCache { _ in }
+      case let .found(_, timestamp) where !self.validate(timestamp):
+        self.store.deletedCache { _ in }
+      case .empty, .found: break
+      }
+    }
+  }
+  
   private var maxCacheAgeInDays: Int {
     return 7
   }
@@ -63,16 +76,6 @@ public final class LocalFeedLoader {
     self.store.insert(feed.toLocal(), timestamp: currentDate()) { [weak self]  error in
       guard self != nil else { return }
       completion(error)
-    }
-  }
-  
-  public func validateCache() {
-    store.retrieve { [unowned self] result in
-      switch result {
-      case .failure:
-        self.store.deletedCache { _ in }
-      default: break
-      }
     }
   }
 }
