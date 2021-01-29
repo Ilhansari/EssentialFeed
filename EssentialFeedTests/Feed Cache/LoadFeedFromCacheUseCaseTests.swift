@@ -85,7 +85,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     XCTAssertEqual(store.receivedMessages, [.retrieve])
   }
   
-  func test_load_doesNotDeleteCacheOnEmptyCache() {
+  func test_load_hasNoSideEffectsOnEmptyCache() {
     let (sut, store) = makeSUT()
     
     sut.load { _ in }
@@ -94,7 +94,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     XCTAssertEqual(store.receivedMessages, [.retrieve])
   }
   
-  func test_load_doesNotDeleteCacheOnLessThanSevenDaysOldCache() {
+  func test_load_hasNoSideEffectsOnLessThanSevenDaysOldCache() {
     let feed = uniqueImageFeed()
     let fixedCurrentDate = Date()
     let sevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7)
@@ -103,7 +103,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     sut.load { _ in }
     store.completeRetrival(with: feed.local, timestamp: sevenDaysOldTimestamp)
     
-    XCTAssertEqual(store.receivedMessages, [.retrieve, .deletedCacheFeed])
+    XCTAssertEqual(store.receivedMessages, [.retrieve])
     
   }
   
@@ -116,7 +116,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     sut.load { _ in }
     store.completeRetrival(with: feed.local, timestamp: moreThanSevenDaysOldTimestamp)
     
-    XCTAssertEqual(store.receivedMessages, [.retrieve, .deletedCacheFeed])
+    XCTAssertEqual(store.receivedMessages, [.retrieve])
     
   }
   
@@ -129,7 +129,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     sut.load { _ in }
     store.completeRetrival(with: feed.local, timestamp: lessThanSevenDaysOldTimestamp)
     
-    XCTAssertEqual(store.receivedMessages, [.retrieve, .deletedCacheFeed])
+    XCTAssertEqual(store.receivedMessages, [.retrieve])
     
   }
   
@@ -173,33 +173,5 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     action()
     wait(for: [exp], timeout: 1.0)
   }
-  
-  private func anyNSError() -> NSError {
-    return NSError(domain: "any error", code: 0)
-  }
-  
-  private func uniqueImage() -> FeedImage {
-    return FeedImage(id: UUID(), description: "any", location: "any", url: anyURL())
-  }
-
-  private func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
-    let feed = [uniqueImage(), uniqueImage()]
-    let localItems = feed.map { LocalFeedImage(id: $0.id, description: $0.description, location: $0.location, url: $0.url) }
-    return (feed, localItems)
-  }
-
-  private func anyURL() -> URL {
-    let url = URL(string: "www.any-url.com")!
-    return url
-  }
-  
 }
-private extension Date {
-  func adding(days: Int) -> Date {
-    return Calendar(identifier: .gregorian).date(byAdding: .day, value: days, to: self)!
-  }
-  
-  func adding(seconds: TimeInterval) -> Date {
-    return self + seconds
-  }
-}
+

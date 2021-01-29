@@ -43,7 +43,6 @@ public final class LocalFeedLoader {
         completion(.success(feed.toModels()))
         
       case .found:
-        self.store.deletedCache { _ in }
         completion(.success([]))
       case .empty:
         completion(.success([]))
@@ -68,8 +67,13 @@ public final class LocalFeedLoader {
   }
   
   public func validateCache() {
-    store.retrieve { _ in }
-    store.deletedCache { _ in }
+    store.retrieve { [unowned self] result in
+      switch result {
+      case .failure:
+        self.store.deletedCache { _ in }
+      default: break
+      }
+    }
   }
 }
 

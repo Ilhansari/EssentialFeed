@@ -25,6 +25,28 @@ class ValidateFeedCacheUseCaseTests: XCTestCase {
     XCTAssertEqual(store.receivedMessages, [.retrieve, .deletedCacheFeed])
   }
   
+  func test_validateCache_doesNotDeleteCacheOnEmptyCache() {
+    let (sut, store) = makeSUT()
+    
+    sut.validateCache()
+    store.completeRetrivalWithEmptyCache()
+    
+    XCTAssertEqual(store.receivedMessages, [.retrieve])
+  }
+  
+  func test_validateCache_doesNotDeleteLessThanSevenDaysOldCache() {
+    let feed = uniqueImageFeed()
+    let fixedCurrentDate = Date()
+    let sevenDaysOldTimestamp = fixedCurrentDate.adding(days: -7)
+    let (sut, store) = makeSUT(currentDate: { fixedCurrentDate })
+    
+    sut.validateCache()
+    store.completeRetrival(with: feed.local, timestamp: sevenDaysOldTimestamp)
+    
+    XCTAssertEqual(store.receivedMessages, [.retrieve])
+    
+  }
+  
   // MARK: - Helpers
   private func makeSUT(currentDate: @escaping () -> Date = Date.init, file: StaticString = #filePath, line: UInt = #line) -> (sut: LocalFeedLoader, store: FeedStoreSpy) {
     let store = FeedStoreSpy()
@@ -32,9 +54,5 @@ class ValidateFeedCacheUseCaseTests: XCTestCase {
     trackForMemoryLeaks(store, file: file, line: line)
     trackForMemoryLeaks(sut, file: file, line: line)
     return (sut, store)
-  }
-
-  private func anyNSError() -> NSError {
-    return NSError(domain: "any error", code: 0)
   }
 }
