@@ -36,13 +36,14 @@ public class CodableFeedStore: FeedStore {
     }
   }
   
-  private let queue = DispatchQueue(label: "\(CodableFeedStore.self)Queue", qos: .userInitiated)
+  private let queue = DispatchQueue(label: "\(CodableFeedStore.self)Queue", qos: .userInitiated, attributes: .concurrent)
   let storeURL: URL
   
   public init(storeURL: URL) {
     self.storeURL = storeURL
   }
   
+  /// Retrieve is a no side-effects, this one run concurently, because no side-effects
   public func retrieve(completion: @escaping (RetrivalCompletion)) {
     let storeURL = self.storeURL
     queue.async {
@@ -59,9 +60,10 @@ public class CodableFeedStore: FeedStore {
     }
   }
   
+  /// Insert is a  side-effects and we use flags barrier to make serial blocks
   public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
     let storeURL = self.storeURL
-    queue.async {
+    queue.async(flags: .barrier) {
       do {
         let encoder = JSONEncoder()
         let cache = Cache(feed: feed.map(CodableFeedImage.init), timestamp: timestamp)
@@ -74,9 +76,10 @@ public class CodableFeedStore: FeedStore {
     }
   }
   
+  /// Delete is a  side-effects and we use flags barrier to make serial blocks
   public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
     let storeURL = self.storeURL
-    queue.async {
+    queue.async(flags: .barrier) {
       guard FileManager.default.fileExists(atPath: storeURL.path) else {
         return completion(nil)
       }
