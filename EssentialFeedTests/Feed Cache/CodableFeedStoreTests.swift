@@ -10,7 +10,7 @@ import XCTest
 import EssentialFeed
 
 class CodableFeedStoreTests: XCTestCase {
- 
+  
   override func setUp() {
     super.setUp()
     
@@ -98,7 +98,7 @@ class CodableFeedStoreTests: XCTestCase {
   
   func test_delete_hasNoSideEffectsOnEmptyCache() {
     let sut = makeSUT()
-
+    
     let deletionError = deleteCache(from: sut)
     
     XCTAssertNil(deletionError, "Expected empty cache deletion to succeed")
@@ -119,9 +119,9 @@ class CodableFeedStoreTests: XCTestCase {
   func test_delete_deliversErrorOnDeletionError() {
     let noDeletePermissionURL = cachesDirectory()
     let sut = makeSUT(storeURL: noDeletePermissionURL)
-
+    
     let deletionError = deleteCache(from: sut)
-
+    
     XCTAssertNotNil(deletionError, "Expected cache deletion to fail")
     expect(sut, toRetrieve: .empty)
   }
@@ -134,7 +134,32 @@ class CodableFeedStoreTests: XCTestCase {
     
     expect(sut, toRetrieveTwice: .failure(anyNSError()))
   }
-
+  
+  func test_storeSideEffects_runSerially() {
+    let sut = makeSUT()
+    var completedOperationsInOrder = [XCTestExpectation]()
+    let op1 = expectation(description: "Operation 1")
+    sut.insert(uniqueImageFeed().local, timestamp: Date()) { _ in
+      completedOperationsInOrder.append(op1)
+      op1.fulfill()
+    }
+    
+    let op2 = expectation(description: "Operation 2")
+    sut.deleteCachedFeed  { _ in
+      completedOperationsInOrder.append(op2)
+      op2.fulfill()
+    }
+    
+    let op3 = expectation(description: "Operation 3")
+    sut.insert(uniqueImageFeed().local, timestamp: Date()) { _ in
+      completedOperationsInOrder.append(op3)
+      op3.fulfill()
+    }
+    waitForExpectations(timeout: 5.0)
+    XCTAssertEqual(completedOperationsInOrder, [op1, op2, op3],
+                   "Expected side-effects to run serially but operations finished in the wrong order.")
+  }
+  
   // MARK - Helpers
   
   private func makeSUT(storeURL: URL? = nil, file: StaticString = #filePath, line: UInt = #line) -> FeedStore {
@@ -156,15 +181,15 @@ class CodableFeedStoreTests: XCTestCase {
   }
   
   private func deleteCache(from sut: FeedStore) -> Error? {
-      let exp = expectation(description: "Wait for cache deletion")
-      var deletionError: Error?
-      sut.deleteCachedFeed { receivedDeletionError in
-        deletionError = receivedDeletionError
-        exp.fulfill()
-      }
-      wait(for: [exp], timeout: 1.0)
-      return deletionError
+    let exp = expectation(description: "Wait for cache deletion")
+    var deletionError: Error?
+    sut.deleteCachedFeed { receivedDeletionError in
+      deletionError = receivedDeletionError
+      exp.fulfill()
     }
+    wait(for: [exp], timeout: 1.0)
+    return deletionError
+  }
   
   private func expect(_ sut: FeedStore, toRetrieve expectedResult: RetrieveCachedFeedResult, file: StaticString = #file, line: UInt = #line) {
     let exp = expectation(description: "Wait for cache retrieval")
@@ -208,6 +233,6 @@ class CodableFeedStoreTests: XCTestCase {
   }
   
   private func undoStoreSideEffects() {
-   deleteStoreArtifacts()
+    deleteStoreArtifacts()
   }
 }
