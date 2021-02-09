@@ -9,7 +9,9 @@
 import XCTest
 import EssentialFeed
 
-class CodableFeedStoreTests: XCTestCase {
+typealias FailableFeedStore = FailableRetrieveFeedStoreSpecs & FailableInsertFeedStoreSpecs & FailableDeleteFeedStoreSpecs
+
+class CodableFeedStoreTests: XCTestCase, FailableFeedStore {
   
   override func setUp() {
     super.setUp()
@@ -96,6 +98,18 @@ class CodableFeedStoreTests: XCTestCase {
     XCTAssertNotNil(insertionError, "Expected cache insertion to fail with an error")
   }
   
+  func test_insert_hasNoSideEffectsOnInsertionError() {
+    let invalidStoreURL = URL(string: "invalid://store-url")!
+    let sut = makeSUT(storeURL: invalidStoreURL)
+    let feed = uniqueImageFeed().local
+    let timestamp = Date()
+    
+    insert((feed, timestamp), to: sut)
+    
+    expect(sut, toRetrieve: .empty)
+  }
+  
+  
   func test_delete_hasNoSideEffectsOnEmptyCache() {
     let sut = makeSUT()
     
@@ -123,6 +137,15 @@ class CodableFeedStoreTests: XCTestCase {
     let deletionError = deleteCache(from: sut)
     
     XCTAssertNotNil(deletionError, "Expected cache deletion to fail")
+    expect(sut, toRetrieve: .empty)
+  }
+  
+  func test_delete_hasNoSideEffectsOnDeletionError() {
+    let noDeletePermissionURL = cachesDirectory()
+    let sut = makeSUT(storeURL: noDeletePermissionURL)
+    
+    deleteCache(from: sut)
+    
     expect(sut, toRetrieve: .empty)
   }
   
@@ -168,57 +191,9 @@ class CodableFeedStoreTests: XCTestCase {
     return sut
   }
   
-  @discardableResult
-  private func insert(_ cache: (feed: [LocalFeedImage], timestamp: Date), to sut: FeedStore) -> Error? {
-    let exp = expectation(description: "Wait for cache insertion")
-    var insertionError: Error?
-    sut.insert(cache.feed, timestamp: cache.timestamp) { receivedInsertionError in
-      insertionError = receivedInsertionError
-      exp.fulfill()
-    }
-    wait(for: [exp], timeout: 1.0)
-    return insertionError
-  }
-  
-  private func deleteCache(from sut: FeedStore) -> Error? {
-    let exp = expectation(description: "Wait for cache deletion")
-    var deletionError: Error?
-    sut.deleteCachedFeed { receivedDeletionError in
-      deletionError = receivedDeletionError
-      exp.fulfill()
-    }
-    wait(for: [exp], timeout: 1.0)
-    return deletionError
-  }
-  
-  private func expect(_ sut: FeedStore, toRetrieve expectedResult: RetrieveCachedFeedResult, file: StaticString = #file, line: UInt = #line) {
-    let exp = expectation(description: "Wait for cache retrieval")
-    
-    sut.retrieve { retrievedResult in
-      switch (expectedResult, retrievedResult) {
-      case (.empty, .empty), (.failure, .failure):
-        break
-      case let (.found(expected), .found(retrieved)):
-        XCTAssertEqual(retrieved.feed, expected.feed, file: file, line: line)
-        XCTAssertEqual(retrieved.timestamp, expected.timestamp, file: file, line: line)
-        
-      default:
-        XCTFail("Expected to retrieve \(expectedResult), got \(retrievedResult) instead", file: file, line: line)
-      }
-      exp.fulfill()
-    }
-    wait(for: [exp], timeout: 1.0)
-  }
-  
-  private func expect(_ sut: FeedStore, toRetrieveTwice expectedResult: RetrieveCachedFeedResult, file: StaticString = #file, line: UInt = #line) {
-    expect(sut, toRetrieve: expectedResult, file: file, line: line)
-    expect(sut, toRetrieve: expectedResult, file: file, line: line)
-  }
-  
   private func testSpecificStoreURL() -> URL {
     return cachesDirectory().appendingPathComponent("\(type(of: self)).store")
   }
-  
   
   private func cachesDirectory() -> URL {
     return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
