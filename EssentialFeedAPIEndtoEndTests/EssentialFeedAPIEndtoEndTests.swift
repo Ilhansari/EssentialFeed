@@ -13,17 +13,17 @@ class EssentialFeedAPIEndtoEndTests: XCTestCase {
 
   func test_endToEndTestServerGetFeedResult_matchesFixedTestAccountData() {
     switch getFeedResult() {
-    case let .success(items):
-      XCTAssertEqual(items.count, 8, "Expected 8 items in the test account feed" )
-      items.enumerated().forEach { (index, item) in
-        XCTAssertEqual(items[0], expectedItem(at: 0))
-        XCTAssertEqual(items[1], expectedItem(at: 1))
-        XCTAssertEqual(items[2], expectedItem(at: 2))
-        XCTAssertEqual(items[3], expectedItem(at: 3))
-        XCTAssertEqual(items[4], expectedItem(at: 4))
-        XCTAssertEqual(items[5], expectedItem(at: 5))
-        XCTAssertEqual(items[6], expectedItem(at: 6))
-        XCTAssertEqual(items[7], expectedItem(at: 7))
+    case let .success(imageFeed):
+      XCTAssertEqual(imageFeed.count, 8, "Expected 8 images in the test account feed" )
+      imageFeed.enumerated().forEach { (index, item) in
+        XCTAssertEqual(imageFeed[0], expectedImage(at: 0))
+        XCTAssertEqual(imageFeed[1], expectedImage(at: 1))
+        XCTAssertEqual(imageFeed[2], expectedImage(at: 2))
+        XCTAssertEqual(imageFeed[3], expectedImage(at: 3))
+        XCTAssertEqual(imageFeed[4], expectedImage(at: 4))
+        XCTAssertEqual(imageFeed[5], expectedImage(at: 5))
+        XCTAssertEqual(imageFeed[6], expectedImage(at: 6))
+        XCTAssertEqual(imageFeed[7], expectedImage(at: 7))
 
       }
     case let .failure(error):
@@ -33,7 +33,7 @@ class EssentialFeedAPIEndtoEndTests: XCTestCase {
     }
   }
 
-  func getFeedResult(file: StaticString = #file, line: UInt = #line) -> LoadFeedResult? {
+    func getFeedResult(file: StaticString = #filePath, line: UInt = #line) -> FeedLoader.Result? {
     let testServerURL = URL(string: "https://static1.squarespace.com/static/5891c5b8d1758ec68ef5dbc2/t/5c52cdd0b8a045df091d2fff/1548930512083/feed-case-study-test-api-feed.json")!
     let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
     let loader = RemoteFeedLoader(url: testServerURL, client: client)
@@ -41,7 +41,7 @@ class EssentialFeedAPIEndtoEndTests: XCTestCase {
     trackForMemoryLeaks(loader, file: file, line: line)
     let exp = expectation(description: "Wait for load completion")
 
-    var receivedResult: LoadFeedResult?
+    var receivedResult: FeedLoader.Result?
     loader.load { result in
       receivedResult = result
       exp.fulfill()
@@ -53,12 +53,18 @@ class EssentialFeedAPIEndtoEndTests: XCTestCase {
   }
 
   // MARK: - Helpers
-
-  private func expectedItem(at index: Int) -> FeedItem {
-    return FeedItem(id: id(at: index),
+  
+  func trackForMemoryLeaks(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
+     addTeardownBlock { [weak instance] in
+       XCTAssertNil(instance, "Instance should have been deallocated.Potential memory leak.", file: file, line: line)
+     }
+   }
+  
+  private func expectedImage(at index: Int) -> FeedImage {
+    return FeedImage(id: id(at: index),
                     description: description(at: index),
                     location: location(at: index),
-                    imageURL: imageURL(at: index))
+                    url: imageURL(at: index))
   }
 
   private func id(at index: Int) -> UUID {

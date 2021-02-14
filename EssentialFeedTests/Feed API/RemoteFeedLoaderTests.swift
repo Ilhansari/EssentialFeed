@@ -107,7 +107,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
   }
 
   // MARK: - Helpers
-  private func makeSUT(url: URL = URL(string: "wwww.a-given-url.com")!, file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
+  private func makeSUT(url: URL = URL(string: "wwww.a-given-url.com")!, file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
     let client = HTTPClientSpy()
     let sut = RemoteFeedLoader(url: url, client: client)
     trackForMemoryLeaks(sut, file: file, line: line)
@@ -119,16 +119,14 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     return .failure(error)
   }
 
-  private func makeItem(id: UUID, description: String? = nil, location: String? = nil, imageURL: URL) -> (model: FeedItem, json: [String: Any]) {
-    let item = FeedItem(id: id, description: description, location: location, imageURL: imageURL)
+  private func makeItem(id: UUID, description: String? = nil, location: String? = nil, imageURL: URL) -> (model: FeedImage, json: [String: Any]) {
+    let item = FeedImage(id: id, description: description, location: location, url: imageURL)
     let itemJson = [
       "id" : id.uuidString,
       "description" : description,
       "location": location,
       "image" : imageURL.absoluteString
-      ].reduce(into: [String: Any]()) { (acc, e) in
-        if let value = e.value { acc[e.key] = value }
-    }
+    ].compactMapValues( { $0 })
     return (item, itemJson)
   }
 
@@ -137,7 +135,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     return try! JSONSerialization.data(withJSONObject: json)
   }
 
-  private func expect(_ sut: RemoteFeedLoader, toCompleteWith expectedResult: RemoteFeedLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+  private func expect(_ sut: RemoteFeedLoader, toCompleteWith expectedResult: RemoteFeedLoader.Result, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) {
 
     let exp = expectation(description: "Wait for load completion")
 
@@ -162,20 +160,20 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 
   private class HTTPClientSpy: HTTPClient {
 
-    var messages = [(url: URL, completion: (HTTPClientResult) -> Void)]()
+    var messages = [(url: URL, completion: (HTTPClient.Result) -> Void)]()
 
     var requestUrls: [URL] {
       return messages.map { $0.url}
     }
 
 
-    func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
+    func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
       messages.append((url, completion))
 
     }
 
     func complete(with error: Error, at index: Int = 0) {
-      messages[index].completion(.failure(error))
+        messages[index].completion(.failure(error))
     }
 
     func complete(withStatusCode code: Int, data: Data, at index: Int = 0) {
@@ -184,7 +182,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         statusCode: code,
         httpVersion: nil,
         headerFields: nil)!
-      messages[index].completion(.success(data, response))
+      messages[index].completion(.success((data, response)))
     }
   }
 
