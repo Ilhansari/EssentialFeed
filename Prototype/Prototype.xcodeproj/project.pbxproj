@@ -64,11 +64,11 @@
 				0F7AAD8125DA7D36003BDA18 /* FeedImageViewModel+PrototypeData.swift */,
 				0F7AAD6925DA6616003BDA18 /* SceneDelegate.swift */,
 				0F7AAD7D25DA7594003BDA18 /* FeedViewController.swift */,
+				0F7AAD8425DA7D96003BDA18 /* FeedImageCell.swift */,
 				0F7AAD6D25DA6616003BDA18 /* Main.storyboard */,
 				0F7AAD7025DA6617003BDA18 /* Assets.xcassets */,
 				0F7AAD7225DA6617003BDA18 /* LaunchScreen.storyboard */,
 				0F7AAD7525DA6617003BDA18 /* Info.plist */,
-				0F7AAD8425DA7D96003BDA18 /* FeedImageCell.swift */,
 			);
 			path = Prototype;
 			sourceTree = "<group>";
