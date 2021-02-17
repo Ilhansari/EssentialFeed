@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0F8BBF7525DB9B4A00FB82F5"
+               BlueprintIdentifier = "0F02029425DCEC4800A26509"
                BuildableName = "EssentialFeediOS.framework"
                BlueprintName = "EssentialFeediOS"
                ReferencedContainer = "container:EssentialFeed.xcodeproj">
@@ -32,7 +32,7 @@
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0F8BBF7525DB9B4A00FB82F5"
+            BlueprintIdentifier = "0F02029425DCEC4800A26509"
             BuildableName = "EssentialFeediOS.framework"
             BlueprintName = "EssentialFeediOS"
             ReferencedContainer = "container:EssentialFeed.xcodeproj">
@@ -44,7 +44,7 @@
             testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0F8BBF7D25DB9B4A00FB82F5"
+               BlueprintIdentifier = "0F02029C25DCEC4800A26509"
                BuildableName = "EssentialFeediOSTests.xctest"
                BlueprintName = "EssentialFeediOSTests"
                ReferencedContainer = "container:EssentialFeed.xcodeproj">
@@ -72,7 +72,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0F8BBF7525DB9B4A00FB82F5"
+            BlueprintIdentifier = "0F02029425DCEC4800A26509"
             BuildableName = "EssentialFeediOS.framework"
             BlueprintName = "EssentialFeediOS"
             ReferencedContainer = "container:EssentialFeed.xcodeproj">
