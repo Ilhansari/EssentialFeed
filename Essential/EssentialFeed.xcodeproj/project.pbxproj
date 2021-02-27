@@ -52,6 +52,7 @@
 		0FE114CB25D26F0900AD25F7 /* XCTestCase+FailableDeletionFeedStoreSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FE114CA25D26F0900AD25F7 /* XCTestCase+FailableDeletionFeedStoreSpecs.swift */; };
 		0FEC04BD25EA5EE800B6EA8F /* UIImage+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEC04BC25EA5EE800B6EA8F /* UIImage+TestHelpers.swift */; };
 		0FEC04C925EA5F5800B6EA8F /* UIRefreshControl+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEC04C825EA5F5800B6EA8F /* UIRefreshControl+TestHelpers.swift */; };
+		0FEC04D025EA5FA100B6EA8F /* UIButton+TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FEC04CF25EA5FA100B6EA8F /* UIButton+TestHelpers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -155,6 +156,7 @@
 		0FE114CA25D26F0900AD25F7 /* XCTestCase+FailableDeletionFeedStoreSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+FailableDeletionFeedStoreSpecs.swift"; sourceTree = "<group>"; };
 		0FEC04BC25EA5EE800B6EA8F /* UIImage+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+TestHelpers.swift"; sourceTree = "<group>"; };
 		0FEC04C825EA5F5800B6EA8F /* UIRefreshControl+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIRefreshControl+TestHelpers.swift"; sourceTree = "<group>"; };
+		0FEC04CF25EA5FA100B6EA8F /* UIButton+TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+TestHelpers.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -394,6 +396,7 @@
 			children = (
 				0FEC04BC25EA5EE800B6EA8F /* UIImage+TestHelpers.swift */,
 				0FEC04C825EA5F5800B6EA8F /* UIRefreshControl+TestHelpers.swift */,
+				0FEC04CF25EA5FA100B6EA8F /* UIButton+TestHelpers.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -694,6 +697,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F0202DC25DCED8500A26509 /* FeedViewControllerTests.swift in Sources */,
+				0FEC04D025EA5FA100B6EA8F /* UIButton+TestHelpers.swift in Sources */,
 				0FEC04C925EA5F5800B6EA8F /* UIRefreshControl+TestHelpers.swift in Sources */,
 				0F794D1525DCF6210007AA5A /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 				0FEC04BD25EA5EE800B6EA8F /* UIImage+TestHelpers.swift in Sources */,
