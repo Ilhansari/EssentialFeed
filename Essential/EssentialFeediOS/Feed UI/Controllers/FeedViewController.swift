@@ -9,18 +9,7 @@
 import UIKit
 import EssentialFeed
 
-public protocol FeedImageDataLoaderTask {
-    func cancel()
-}
-
-public protocol FeedImageDataLoader {
-    
-    typealias Result = Swift.Result<Data, Error>
-    
-    func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask
-}
-
-final public class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
+public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     private var feedLoader: FeedLoader?
     
     private var imageLoader: FeedImageDataLoader?
@@ -77,7 +66,7 @@ final public class FeedViewController: UITableViewController, UITableViewDataSou
                 cell?.feedImageRetryButton.isHidden = (image != nil)
                 cell?.feedImageContainer.stopShimmering()
             }
-    
+            
         }
         
         cell.onRetry = loadImage
@@ -101,7 +90,7 @@ final public class FeedViewController: UITableViewController, UITableViewDataSou
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach(cancelTask)
     }
-
+    
     private func cancelTask(forRowAt indexPath: IndexPath) {
         tasks[indexPath]?.cancel()
         tasks[indexPath] = nil
