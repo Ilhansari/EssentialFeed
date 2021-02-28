@@ -10,16 +10,17 @@ import Foundation
 import EssentialFeed
 
 final class FeedViewModel {
+    
+    typealias Observer<T> = (T) -> Void
+    
     private let feedLoader: FeedLoader
 
     init(feedLoader: FeedLoader) {
         self.feedLoader = feedLoader
     }
 
-    
-    var onLoadingState: ((Bool) -> Void)?
-    var onFeedLoad: (([FeedImage]) -> Void)?
-
+    var onLoadingState: Observer<Bool>?
+    var onFeedLoad: Observer<[FeedImage]>?
 
     func loadFeed() {
         onLoadingState?(true)
