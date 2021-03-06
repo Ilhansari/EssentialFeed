@@ -6,7 +6,6 @@
 //  Copyright © 2021 ilhan sarı. All rights reserved.
 //
 
-import Foundation
 import EssentialFeed
 
 protocol FeedImageView {
