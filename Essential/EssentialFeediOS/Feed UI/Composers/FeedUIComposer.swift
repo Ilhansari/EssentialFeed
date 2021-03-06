@@ -10,6 +10,7 @@ import UIKit
 import EssentialFeed
 
 public final class FeedUIComposer {
+    
     private init() {}
     
     public static func feedComposedWith(feedLoader: FeedLoader, imageLoader: FeedImageDataLoader) -> FeedViewController {
@@ -28,6 +29,7 @@ public final class FeedUIComposer {
 }
 
 final class WeakRefVirtualProxy<T: AnyObject> {
+    
     private weak var object: T?
     
     init(_ object: T) {
@@ -73,6 +75,7 @@ private final class FeedViewAdapter: FeedView {
 }
 
 private final class FeedImageDataLoaderPresentationAdapter<View: FeedImageView, Image>: FeedImageCellControllerDelegate where View.Image == Image {
+    
     private let model: FeedImage
     private let imageLoader: FeedImageDataLoader
     private var task: FeedImageDataLoaderTask?
