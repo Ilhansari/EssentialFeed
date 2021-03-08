@@ -38,27 +38,6 @@ private extension FeedViewController {
     }
 }
 
-final class WeakRefVirtualProxy<T: AnyObject> {
-    
-    private weak var object: T?
-    
-    init(_ object: T) {
-        self.object = object
-    }
-}
-
-extension WeakRefVirtualProxy: FeedLoadingView where T: FeedLoadingView {
-    func displayLoading(_ viewModel: FeedLoadingViewModel) {
-        object?.displayLoading(viewModel)
-    }
-}
-
-extension WeakRefVirtualProxy: FeedImageView where T: FeedImageView, T.Image == UIImage {
-    func display(_ model: FeedImageViewModel<UIImage>) {
-        object?.display(model)
-    }
-}
-
 
 private final class FeedViewAdapter: FeedView {
     
@@ -80,64 +59,6 @@ private final class FeedViewAdapter: FeedView {
                 imageTransformer: UIImage.init)
             
             return view
-        }
-    }
-}
-
-private final class FeedImageDataLoaderPresentationAdapter<View: FeedImageView, Image>: FeedImageCellControllerDelegate where View.Image == Image {
-    
-    private let model: FeedImage
-    private let imageLoader: FeedImageDataLoader
-    private var task: FeedImageDataLoaderTask?
-
-    var presenter: FeedImagePresenter<View, Image>?
-
-    init(model: FeedImage, imageLoader: FeedImageDataLoader) {
-        self.model = model
-        self.imageLoader = imageLoader
-    }
-
-    func didRequestImage() {
-        presenter?.didStartLoadingImageData(for: model)
-
-        let model = self.model
-        task = imageLoader.loadImageData(from: model.url) { [weak self] result in
-            switch result {
-            case let .success(data):
-                self?.presenter?.didFinishLoadingImageData(with: data, for: model)
-
-            case let .failure(error):
-                self?.presenter?.didFinishLoadingImageData(with: error, for: model)
-            }
-        }
-    }
-
-    func didCancelImageRequest() {
-        task?.cancel()
-    }
-}
-
-private final class FeedLoaderPresentationAdapter: FeedViewControllerDelegate {
-    
-    private let feedLoader: FeedLoader
-    
-    var presenter: FeedPresenter?
-    
-    init(feedLoader: FeedLoader) {
-        self.feedLoader = feedLoader
-    }
-    
-    func didRequestFeedRefresh() {
-        presenter?.didStartLoadingview()
-        
-        feedLoader.load { [weak self] result in
-            switch result {
-            case let .success(feed):
-                self?.presenter?.didFinishLoadingView(with: feed)
-                
-            case let .failure(error):
-                self?.presenter?.didFinishLoadingFeed(with: error)
-            }
         }
     }
 }
