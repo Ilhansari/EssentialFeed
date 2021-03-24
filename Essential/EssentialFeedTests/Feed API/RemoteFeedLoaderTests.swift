@@ -14,7 +14,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
   func test_init_doesNotRequestDataFromUrl() {
     let (_, client) = makeSUT()
 
-    XCTAssertTrue(client.requestUrls.isEmpty)
+    XCTAssertTrue(client.requestedURLs.isEmpty)
   }
 
   func test_load_requestsDataFromUrl() {
@@ -22,7 +22,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     let (sut, client) = makeSUT(url: url)
 
     sut.load { _ in}
-    XCTAssertEqual(client.requestUrls, [url])
+    XCTAssertEqual(client.requestedURLs, [url])
     
   }
 
@@ -32,7 +32,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 
     sut.load { _ in}
     sut.load { _ in}
-    XCTAssertEqual(client.requestUrls, [url, url])
+    XCTAssertEqual(client.requestedURLs, [url, url])
   }
 
   func test_load_deliversErrorOnClientError() {
@@ -157,33 +157,4 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 
     wait(for: [exp], timeout: 1.0)
   }
-
-  private class HTTPClientSpy: HTTPClient {
-
-    var messages = [(url: URL, completion: (HTTPClient.Result) -> Void)]()
-
-    var requestUrls: [URL] {
-      return messages.map { $0.url}
-    }
-
-
-    func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
-      messages.append((url, completion))
-
-    }
-
-    func complete(with error: Error, at index: Int = 0) {
-        messages[index].completion(.failure(error))
-    }
-
-    func complete(withStatusCode code: Int, data: Data, at index: Int = 0) {
-      let response = HTTPURLResponse(
-        url: requestUrls[index],
-        statusCode: code,
-        httpVersion: nil,
-        headerFields: nil)!
-      messages[index].completion(.success((data, response)))
-    }
-  }
-
 }

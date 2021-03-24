@@ -1,8 +1,8 @@
 //
-//  FeedViewAdapter.swift
-//  EssentialFeediOS
+//  RemoteFeedImageDataLoader.swift
+//  EssentialFeed
 //
-//  Created by Ilhan Sari on 8.03.2021.
+//  Created by Ilhan Sari on 20.03.2021.
 //  Copyright © 2021 ilhan sarı. All rights reserved.
 //
 
